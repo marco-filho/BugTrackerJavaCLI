@@ -1,31 +1,52 @@
 package Auth;
 
-import java.util.List;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 
+import Application.Data.DataContext;
 import Application.Model.User;
 
-public class Session {
-    private User user;
-    private List<User> users;
-    //db
+public abstract class Session {
+    private static String path = "Session/session.txt";
 
-    public Session() {
-        user = new User();
+    public static boolean isUserAuthenticated() {
+        File file = new File(path);
+        return file.exists();
     }
 
-    public boolean isUserAuthenticated() {
-        return user.isValid();
-    }
-
-    public void signIn() {
-
+    public static boolean signIn(User user) {
+        FileWriter fw = null;
+        if (Authentication.authenticate(user)) {
+            try {
+                fw = new FileWriter(path);
+                fw.write(user.getUsername());
+            } catch (IOException e) {
+                System.out.println("Ocorreu um erro: \n" + e.getMessage());
+            } finally {
+                try {
+                    fw.close();
+                } catch (IOException e) {
+                    System.out.println("Ocorreu um erro: \n" + e.getMessage());
+                }
+            }
+            return true;
+        }
+        else
+            return false;
     }
     
-    public void signOut() {
-        //print
+    public static boolean signOut() {
+        File file = new File(path);
+        return file.delete();
     }
 
-    public void signUp() {
-        //print
+    public static boolean signUp(User user) {
+        DataContext context = new DataContext();
+        if (context.getUsers().getAll().stream().anyMatch(u -> u.getUsername() == user.getUsername()))
+            return false;
+        else
+            context.getUsers().add(user);
+        return true;
     }
 }
