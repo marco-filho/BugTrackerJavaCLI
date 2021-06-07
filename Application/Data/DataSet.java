@@ -1,11 +1,9 @@
 package Application.Data;
 
 import java.io.BufferedWriter;
-import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.io.Writer;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -15,47 +13,63 @@ import com.google.gson.reflect.TypeToken;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
 
-import Application.Model.User;
-
-public class DataSet {
-    private List<User> users;
+public class DataSet<T> {
+    String dataTitle;
+    private List<T> items;
     Gson gson = new GsonBuilder().setPrettyPrinting().create();
 
-    //remove later
-    public DataSet() {
+    DataSet(String dataTitle) {
+        this.dataTitle = dataTitle;
         updateDataSet();
     }
 
     private void updateDataSet() {
         try {
-            JsonReader reader = new JsonReader(new FileReader("Persistency/Users.json"));
-            users = gson.fromJson(reader, new TypeToken<ArrayList<User>>() {}.getType());
+            JsonReader reader = new JsonReader(new FileReader("Persistency/" + dataTitle + ".json"));
+            items = gson.fromJson(reader, new TypeToken<ArrayList<T>>() {}.getType());
             reader.close();
         } catch (IOException e) {
-            System.out.println(e.toString());
+            items = new ArrayList<T>();
         }
     }
 
-    public List<User> getUsers() {
-        if (users.size() == 0 || users == null) {
+    public List<T> getAll() {
+        if (items.size() == 0 || items == null) {
             return null;
-        } else
-            return users;
+        }
+        updateDataSet();
+        return items;
     }
 
-    public void addUser(User user) {
-        users.add(user);
+    public T getOne(T item) {
+        if (items.size() == 0 || items == null) {
+            return null;
+        }
+
+        updateDataSet();
+
+        for (T i : items) {
+            if (i == item) {
+                return i;
+            }
+        }
+        
+        return null;
     }
 
-    public void removeUser(User user) {
-        users.remove(user);
+    public void add(T item) {
+        items.add(item);
     }
 
-    public void saveChanges() {
-        //save changes from users to json db
+    public void remove(T item) {
+        items.remove(item);
+    }
+
+    void saveChanges() {
+        //save changes from items to json db
         try {
-            BufferedWriter bw = new BufferedWriter(new FileWriter("Persistency/Users.json"));
-            gson.toJson(users, new TypeToken<ArrayList<User>>() {}.getType(), new JsonWriter(bw));
+            BufferedWriter bw = new BufferedWriter(new FileWriter("Persistency/" + dataTitle + ".json"));
+            gson.toJson(items, new TypeToken<ArrayList<T>>() {}.getType(), new JsonWriter(bw));
             bw.close();
         } catch (IOException e) {
             System.out.println(e.toString());

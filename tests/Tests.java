@@ -9,14 +9,14 @@ import java.io.Writer;
 import java.io.FileWriter;
 import com.google.gson.reflect.TypeToken;
 
-import Application.Data.DataSet;
+import Application.Data.DataContext;
 import Application.Model.User;
 
 public class Tests {
     public static void testSaveChangesAndReadJsonFile() {
-        DataSet dset = new DataSet();
-        dset.addUser(new User("aaaa", "bbb", "sssenha"));
-        dset.saveChanges();
+        DataContext context = new DataContext();
+        context.getUsers().add(new User("aaaa", "bbb", "sssenha"));;
+        context.saveChanges();
     }
     
     public static void testGSONstuff() {
