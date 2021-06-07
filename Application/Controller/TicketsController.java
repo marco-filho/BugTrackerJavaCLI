@@ -1,7 +1,26 @@
 package Application.Controller;
 
-public abstract class TicketsController {
+import Application.View.View;
+import Auth.Session;
 
-    public static void index() {
+public abstract class TicketsController {
+    public static void showTickets() {
+        if (!Session.isUserAuthenticated()) {
+            View.index();
+            return;
+        }
+
+    }
+
+    public static void newTicket() {
+
+    }
+
+    public static void updateTicket() {
+        
+    }
+
+    public static void deleteTicket() {
+        
     }
 }
