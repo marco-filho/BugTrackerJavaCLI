@@ -34,26 +34,23 @@ public class DataSet<T> {
     }
 
     public List<T> getAll() {
+        updateDataSet();
         if (items.size() == 0 || items == null) {
             return null;
         }
-        updateDataSet();
         return items;
     }
 
     public T getOne(T item) {
+        updateDataSet();
         if (items.size() == 0 || items == null) {
             return null;
         }
-
-        updateDataSet();
-
         for (T i : items) {
             if (i == item) {
                 return i;
             }
         }
-        
         return null;
     }
 

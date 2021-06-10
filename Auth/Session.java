@@ -6,16 +6,24 @@ import java.io.IOException;
 
 import Application.Data.DataContext;
 import Application.Model.User;
+import Auth.AuthExceptions.IllegalPasswordException;
+import Auth.AuthExceptions.IllegalUsernameException;
+import Auth.AuthExceptions.UnmatchedCredentialsException;
 
-public abstract class Session {
+public class Session {
     private static String path = "Session/session.txt";
+    private DataContext context;
 
-    public static boolean isUserAuthenticated() {
+    public Session() {
+        context = new DataContext();
+    }
+
+    public boolean isUserAuthenticated() {
         File file = new File(path);
         return file.exists();
     }
 
-    public static boolean signIn(User user) {
+    public boolean signIn(User user) throws UnmatchedCredentialsException {
         FileWriter fw = null;
         if (Authentication.authenticate(user)) {
             try {
@@ -36,17 +44,15 @@ public abstract class Session {
             return false;
     }
     
-    public static boolean signOut() {
+    public boolean signOut() {
         File file = new File(path);
         return file.delete();
     }
 
-    public static boolean signUp(User user) {
-        DataContext context = new DataContext();
-        if (context.getUsers().getAll().stream().anyMatch(u -> u.getUsername() == user.getUsername()))
-            return false;
-        else
-            context.getUsers().add(user);
+    public boolean signUp(User user) throws IllegalUsernameException, IllegalPasswordException {
+        Authentication.validateUsername(user.getUsername());
+        Authentication.validatePassword(user.getPassword());
+        context.getUsers().add(user);
         return true;
     }
 }
