@@ -1,12 +1,13 @@
 package Application.Model;
 
-import Auth.Roles.*; 
+import Auth.Authorization.Role; 
 
-public class User {
+public class User extends BaseModel {
     private String name;
     private String username;
     private String password;
-    //private Role role; // dont know
+    private Role role;
+    private String team;
 
     //remove later
     public User(String name, String username, String password) {
@@ -15,21 +16,53 @@ public class User {
         this.password = password;
     }
 
-    //remove later
     @Override
     public String toString() {
-        return name + "(@" + username + ")";
+        return name + "(@" + username + ")" + " | " + team;
+    }
+    
+
+    public void setName(String name) {
+        this.name = name;
     }
 
     public String getName() {
         return name;
     }
 
+
+    public void setUsername(String username) {
+        this.username = username;
+    }
+
     public String getUsername() {
-        return name;
+        return username;
+    }
+
+
+    public void setPassword(String password) {
+        this.password = password;
     }
 
     public String getPassword() {
-        return name;
+        return password;
+    }
+
+
+    public void setRole(Role role) {
+        this.role = role;
+    }
+
+    public Role getRole() {
+        return role;
+    }
+
+
+    public void setTeam(String team) {
+        this.team = team;
+    }
+
+    public String getTeam() {
+        return team;
     }
 }
