@@ -10,28 +10,32 @@ import Auth.AuthExceptions.UsernameExistsException;
 abstract class Authentication {
     static boolean authenticate(User user) throws UnmatchedCredentialsException  {
         DataContext context = new DataContext();
-        if (context.getUsers().getAll()
-            .stream()
-            .noneMatch(u -> u.getUsername() == user.getUsername() && u.getPassword() == user.getPassword()))
+        if (context.getUsers()
+                .getAll()
+                .stream()
+                .noneMatch(u -> u.getUsername().equals(user.getUsername()) && u.getPassword().equals(user.getPassword())))
             throw new UnmatchedCredentialsException();
         else
             return true;
     }
 
-    static boolean validateUsername(String username) throws IllegalUsernameException {
+    static boolean validateUsername(User user) throws IllegalUsernameException {
         DataContext context = new DataContext();
         String allowed = "[^\\s+][a-zA-Z0-9_.\\-]*";
-        if (username.matches(allowed) || username.length() < 4)
+        if (!user.getUsername().matches(allowed) || user.getUsername().length() < 4)
             throw new IllegalUsernameException();
-        else if (context.getUsers().getAll().stream().anyMatch(u -> u.getUsername() == username))
+        else if (context.getUsers().getAll() != null &&
+                context.getUsers().getAll()
+                    .stream()
+                    .anyMatch(u -> u.getId() != user.getId() && u.getUsername().equals(user.getUsername())))
             throw new UsernameExistsException();
         else
             return true;
     }
 
-    static boolean validatePassword(String password) throws IllegalPasswordException {
+    static boolean validatePassword(User user) throws IllegalPasswordException {
         String allowed = "[^\\s+][a-zA-Z0-9@#?+=\\-]*";
-        if (password.matches(allowed) || password.length() < 4)
+        if (!user.getPassword().matches(allowed) || user.getPassword().length() < 4)
             throw new IllegalPasswordException();
         return true;
     }
