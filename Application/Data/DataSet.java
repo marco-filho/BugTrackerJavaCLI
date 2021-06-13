@@ -6,6 +6,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -13,12 +14,21 @@ import com.google.gson.reflect.TypeToken;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
 
-public class DataSet<T> {
-    String dataTitle;
-    private List<T> items;
-    Gson gson = new GsonBuilder().setPrettyPrinting().create();
+import Application.Model.BaseModel;
 
-    DataSet(String dataTitle) {
+public class DataSet<T extends BaseModel> {
+    private String dataTitle;
+    private List<T> items;
+    private Gson gson;
+    private TypeToken<List<T>> typeToken;
+
+    DataSet(String dataTitle, TypeToken<List<T>> typeToken) {
+        gson = new GsonBuilder()
+                .setPrettyPrinting()
+                .disableHtmlEscaping()
+                .setLenient()
+                .create();
+        this.typeToken = typeToken;
         this.dataTitle = dataTitle;
         updateDataSet();
     }
@@ -26,11 +36,12 @@ public class DataSet<T> {
     private void updateDataSet() {
         try {
             JsonReader reader = new JsonReader(new FileReader("Persistency/" + dataTitle + ".json"));
-            items = gson.fromJson(reader, new TypeToken<ArrayList<T>>() {}.getType());
+            items = gson.fromJson(reader, typeToken.getType());
             reader.close();
         } catch (IOException e) {
             items = new ArrayList<T>();
         }
+        items = items.stream().sorted().collect(Collectors.toList());
     }
 
     public List<T> getAll() {
@@ -54,19 +65,64 @@ public class DataSet<T> {
         return null;
     }
 
+    public T getOneById(int Id) {
+        updateDataSet();
+        if (items.size() == 0 || items == null) {
+            return null;
+        }
+        for (T i : items) {
+            if (i.getId() == Id) {
+                return i;
+            }
+        }
+        return null;
+    }
+
+    public int getIndex(T item) {
+        updateDataSet();
+        if (items.size() == 0 || items == null) {
+            return -1;
+        }
+        for (int i = 0; i < items.size(); i++) {
+            if (items.get(i) == item)
+                return i;
+        }
+        return -1;
+    }
+
     public void add(T item) {
+        if (items.size() == 0 || items == null) {
+            items.add(item);
+            return;
+        }
+        T last = items.get(items.size() - 1);
+        item.setId(last.getId() + 1);
         items.add(item);
     }
 
-    public void remove(T item) {
+    public void update(T newer) {
+        updateDataSet();
+        for(int i = 0; i < items.size(); i++) {
+            if (items.get(i).getId() == newer.getId()) {
+                items.set(i, newer);
+                break;
+            }
+        }
+    }
+
+    public void remove(int id) {
+        T item = getAll()
+                .stream()
+                .filter(t -> t.getId() == id)
+                .findFirst()
+                .orElse(null);
         items.remove(item);
     }
 
     void saveChanges() {
-        //save changes from items to json db
         try {
             BufferedWriter bw = new BufferedWriter(new FileWriter("Persistency/" + dataTitle + ".json"));
-            gson.toJson(items, new TypeToken<ArrayList<T>>() {}.getType(), new JsonWriter(bw));
+            gson.toJson(items, typeToken.getType(), new JsonWriter(bw));
             bw.close();
         } catch (IOException e) {
             System.out.println(e.toString());

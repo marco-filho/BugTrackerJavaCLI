@@ -1,5 +1,9 @@
 package Application.Data;
 
+import java.util.List;
+
+import com.google.gson.reflect.TypeToken;
+
 import Application.Model.*;
 
 public class DataContext {
@@ -7,8 +11,8 @@ public class DataContext {
     private DataSet<Ticket> ticketsData;
 
     public DataContext() {
-        usersData = new DataSet<User>("Users");
-        ticketsData = new DataSet<Ticket>("Tickets");
+        usersData = new DataSet<User>("Users", new TypeToken<List<User>>() {});
+        ticketsData = new DataSet<Ticket>("Tickets", new TypeToken<List<Ticket>>() {});
     }
 
     public DataSet<User> getUsers() {
