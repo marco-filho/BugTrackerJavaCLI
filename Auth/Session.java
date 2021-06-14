@@ -5,6 +5,8 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.Scanner;
 
 import Application.Data.DataContext;
@@ -15,7 +17,8 @@ import Auth.AuthExceptions.UnmatchedCredentialsException;
 import Auth.AuthExceptions.UserNotAuthenticatedException;
 
 public class Session {
-    private static String path = "Session/session.txt";
+    private static String dir = "Session/";
+    private static String path = dir + "session.txt";
     private DataContext context;
 
     public Session() {
@@ -54,6 +57,7 @@ public class Session {
         FileWriter fw = null;
         if (Authentication.authenticate(user)) {
             try {
+                Files.createDirectories(Paths.get(dir));
                 fw = new FileWriter(path);
                 fw.write(user.getUsername());
             } catch (IOException e) {

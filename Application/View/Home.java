@@ -36,8 +36,9 @@ public class Home {
         
         if(session.isUserAuthenticated()) {
             System.out.println("(0) Sair da conta e da aplicação");
-            System.out.println("(1) Sair da aplicação");
-            System.out.println("(2) Abrir Painel de Controle");
+            System.out.println("(1) Sair da conta");
+            System.out.println("(2) Sair da aplicação");
+            System.out.println("(3) Abrir Painel de Controle");
 
             input = UITools.inputValidation(2);
 
@@ -45,10 +46,14 @@ public class Home {
                 case 0:
                     signOutUI();
                     System.exit(0);
+                    break;
                 case 1:
-                    System.exit(0);
+                    signOutUI();
                     break;
                 case 2:
+                    System.exit(0);
+                    break;
+                case 3:
                     Dashboard.index();
                     break;
             }
@@ -115,7 +120,5 @@ public class Home {
             System.out.println("Você saiu.");
         else
             System.out.println("Ocorreu um erro.");
-
-        System.exit(0);
     }
 }
