@@ -92,6 +92,7 @@ public class DataSet<T extends BaseModel> {
 
     public void add(T item) {
         if (items.size() == 0 || items == null) {
+            item.setId(1);
             items.add(item);
             return;
         }

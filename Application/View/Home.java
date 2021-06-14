@@ -40,7 +40,7 @@ public class Home {
             System.out.println("(2) Sair da aplicação");
             System.out.println("(3) Abrir Painel de Controle");
 
-            input = UITools.inputValidation(2);
+            input = UITools.inputValidation(3);
 
             switch (input) {
                 case 0:
